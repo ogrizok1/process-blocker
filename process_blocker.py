@@ -1,10 +1,8 @@
-#process blocker
-#author: ogrizok1
-
 from os import system
-from tkinter import messagebox
+from tkinter.messagebox import showinfo
+from tkinter import *
+#import threading       later
 import time
-import threading
 
 try:
     import psutil
@@ -12,27 +10,29 @@ except ImportError:
     system("pip install psutil")
     import psutil
 
-def proc_stop(processes):
-    print("---------------------")
-    print("programm started")
-    print("---------------------")
+def proc_stop(block):
     while True:
         for proc in psutil.process_iter(["name"]):
-            if proc.info["name"] in processes:
+            if proc.info["name"] in block:
                 proc.kill()
+                if messageB.get() == 1:
+                    showinfo(message="blocked",title="not today")
+                time.sleep(0.3)
+            else:
+                continue
 
-                print(time.strftime('%d.%m.%Y %H:%M:%S'))
-                print(f'detected "{proc.info["name"]}"')
-                print("shutdown process")
-                print("---------------------")
+def enter_btn():
+    print(proc_entry.get())
+    blocked.append(proc_entry.get())
 
-                def message():
-                    messagebox.showerror("err", "not today")
-                threading.Thread(target=message).start()
+def turn_on():
+    root.destroy()
+    proc_stop(blocked)
 
-#You can change this filter.
+processes = []
+blocked = []
 sys_proc = [
-            "svchost.exe","csrss.exe",
+            "svchost.exe","csrss.exe","System","",
             "wininit.exe","smss.exe","services.exe","winlogon.exe",
             "LsaIso.exe","lsass.exe","fontdrvhost.exe","smartscreen.exe",
             "dwm.exe","msedge.exe","CefSharp.BrowserSubprocess.exe",
@@ -49,23 +49,37 @@ sys_proc = [
             "StartMenuExperienceHost.exe","PhoneExperienceHost.exe","LockApp.exe",
             "ctfmon.exe","NisSrv.exe","crashhelper.exe","TextInputHost.exe",
             "CrossDeviceService.exe","ms-teams.exe","UserOOBEBroker.exe","jusched.exe",
-            "XboxPcAppFT.exe","SearchProtocolHost.exe"
+            "XboxPcAppFT.exe","SearchProtocolHost.exe","System Idle Process"
             ]
 
-processes = []
-blocked = []
+root = Tk()
+root.title("process blocker")
+root.geometry("600x500+1000+400")
+root.resizable(False,False)
 
 for proc in psutil.process_iter(["name"]):
     #checks if the process is in the filter or has already been added to the list
     if proc.info["name"] not in sys_proc and proc.info["name"] not in processes:
         processes.append(proc.info["name"])
-        print(proc.info["name"])
 
-print("---------------------")
-print("Write which processes you want to block. When finished, write 0.")
-n = input()
-while n != "0":
-    blocked.append(n)
-    n = input()
+processes_var = Variable(value=processes)
+proc_list = Listbox(listvariable=processes_var,font=("Arial",12))
+proc_list.pack(side=LEFT,fill=Y,padx=20,pady=10)
 
-proc_stop(blocked)
+first_label = Label(text="Insert here the name of the process you want to block.",font=("Arial",12))
+first_label.pack(anchor="nw",pady=10)
+
+proc_entry = Entry(font=("Arial",12),width=40)
+proc_entry.pack(anchor="nw",pady=10)
+
+enter_button = Button(command=enter_btn,text="Enter",width=20,font=("Arial",12))
+enter_button.pack(anchor="nw",pady=10)
+
+messageB  = IntVar()
+message_check = Checkbutton(text="use messagebox",variable=messageB)
+message_check.pack(anchor="nw",pady=10)
+
+start_btn = Button(text="turn on", command=turn_on)
+start_btn.pack(anchor="nw",pady=10)
+
+root.mainloop()

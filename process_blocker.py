@@ -1,28 +1,31 @@
-from os import system
+import os
 from tkinter.messagebox import showinfo
 from tkinter import *
-#import threading       later
+import threading 
 import time
 
 try:
     import psutil
 except ImportError:
-    system("pip install psutil")
+    os.system("pip install psutil")
     import psutil
+
+def show_message():
+    showinfo(message="blocked", title="not today")
 
 def proc_stop(block):
     while True:
         for proc in psutil.process_iter(["name"]):
-            if proc.info["name"] in block:
-                proc.kill()
-                if messageB.get() == 1:
-                    showinfo(message="blocked",title="not today")
-                time.sleep(0.3)
-            else:
-                continue
+            try: 
+                if proc.info["name"] in block:
+                    proc.kill()
+                    if messageB.get() == 1:
+                        threading.Thread(target=show_message).start()
+                    time.sleep(0.5)
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+                pass
 
 def enter_btn():
-    print(proc_entry.get())
     blocked.append(proc_entry.get())
 
 def turn_on():
@@ -83,3 +86,4 @@ start_btn = Button(text="turn on", command=turn_on)
 start_btn.pack(anchor="nw",pady=10)
 
 root.mainloop()
+

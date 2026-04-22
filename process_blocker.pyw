@@ -9,7 +9,7 @@ except ImportError:
     os.system("pip install psutil")
     import psutil
 
-def main_proc(messageB,block):
+def main_proc(messageB,block,spy_int):
     def show_message():
         showinfo(message="blocked", title="not today")
 
@@ -18,7 +18,7 @@ def main_proc(messageB,block):
             try: 
                 if proc.info["name"] in block:
                     proc.kill()
-                    if messageB.get() == 1:
+                    if messageB == 1:
                         threading.Thread(target=show_message).start()
                     time.sleep(0.5)
             except (psutil.NoSuchProcess, psutil.AccessDenied):

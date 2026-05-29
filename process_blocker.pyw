@@ -9,7 +9,7 @@ except ImportError:
     os.system("pip install psutil")
     import psutil
 
-def main_proc(messageB,block,spy_int):
+def main_proc(messageB,block):
     def show_message():
         showinfo(message="blocked", title="not today")
 

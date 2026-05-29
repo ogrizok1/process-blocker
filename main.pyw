@@ -13,9 +13,8 @@ def enter_btn():
 
 def turn_on():
     messageA = messageB.get()
-    spy_int = spy_var.get()
     root.destroy()
-    main_proc(messageA,blocked,spy_int)
+    main_proc(messageA,blocked)
 
 processes = []
 blocked = []

@@ -1,2 +1,2 @@
 # process-blocker
-finds and blocks processes at your request
+find and block processes at your request
